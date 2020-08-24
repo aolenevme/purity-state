@@ -1,21 +1,8 @@
-/* eslint eslint-comments/no-use: 0 no-console: 0 */
-
 import store from "../store.js";
 
-/**
- * Registry of events to do side-effects
- */
 const effectsEventsRegistry = {};
 
-/**
- * Function to trigger side-effects
- * @param {String} id - An unique id of the side-effect event
- * @param {*} payload - Payload that is used for the side-effect
- * @param {Function} afterFn - An optional function that gets a result
- * of the side-effect execution
- * @returns void
- */
-async function dispatchFx(id, payload, afterFn) {
+async function dispatchFx(id, payload) {
     if (!id) {
         console.error("Enable to dispatch a side-effect event without its id");
 
@@ -31,30 +18,19 @@ async function dispatchFx(id, payload, afterFn) {
         return;
     }
 
-    // Emit a handler and pass a result into the afterFn
-    const {eventFx, handlerFx} = effectsEventsRegistry[id];
+    const { preEffect, effect, postEffect } = effectsEventsRegistry[id];
 
-    await afterFn(store, await handlerFx(eventFx(store, payload)));
+    await postEffect(store, await effect(preEffect(store, payload)));
 }
 
-/**
- * Register an event that do side-effects
- * @param {String} id - An unique id of the side-effect event
- * @param {Function} eventFx - Function that returns instructions
- * for the store mutations
- * @param {Function} handlerFx - A function that accepts instructions
- * as a DSL to execute side-effects
- */
-function regEventFx(id, eventFx, handlerFx) {
+function regEventFx(id, preEffect, effect, postEffect) {
     if (!id) {
-        console.error(
-            "Unable to register the side-effect event without its id"
-        );
+        console.error("Unable to register the side-effect event without its id");
     }
 
-    if (!eventFx) {
+    if (!preEffect && !effect && !postEffect) {
         console.error(
-            "Unable to register the side-effect event without its handler"
+            "Unable to register the side-effect event without its handlers"
         );
     }
 
@@ -65,12 +41,7 @@ function regEventFx(id, eventFx, handlerFx) {
         );
     }
 
-    // Register an event
-    // eslint-disable-next-line fp/no-mutation
-    effectsEventsRegistry[id] = {eventFx, handlerFx};
+    effectsEventsRegistry[id] = { preEffect, effect, postEffect };
 }
 
-export {
-    dispatchFx,
-    regEventFx
-};
+export { dispatchFx, regEventFx };
