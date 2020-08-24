@@ -1,0 +1,31 @@
+{
+  "extends": [
+    "react-app",
+    "plugin:jsx-a11y/recommended",
+    "hardcore",
+    "hardcore/fp",
+    "plugin:react/recommended",
+    "plugin:lodash/recommended"
+  ],
+  "plugins": [
+    "lodash",
+    "jsx-a11y"
+  ],
+  "env": {
+    "browser": true
+  },
+  "rules": {
+    "max-len": [
+      2,
+      120,
+      4
+    ],
+    "react/prop-types": "off",
+    "no-unused-vars": [
+      "error",
+      {
+        "varsIgnorePattern": "React"
+      }
+    ]
+  }
+}
