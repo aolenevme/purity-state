@@ -1,5 +1,5 @@
 {
-  "name": "lmru--cr-status-order",
+  "name": "purity-state",
   "version": "0.1.1",
   "private": true,
   "dependencies": {
